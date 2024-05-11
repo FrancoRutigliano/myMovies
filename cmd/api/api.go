@@ -4,8 +4,13 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/FrancoRutigliano/myMovies/internal/handlers"
 	"github.com/FrancoRutigliano/myMovies/pkg/middlewares"
 )
+
+type Handler interface {
+	RegisterRoutes(router *http.ServeMux)
+}
 
 type APIServer struct {
 	addr string
@@ -24,6 +29,9 @@ func (app *APIServer) Run() error {
 	v1 := http.NewServeMux()
 
 	v1.Handle("/v1/", http.StripPrefix("/v1/", router))
+
+	moviesHandler := handlers.MovieHandler{}
+	moviesHandler.RegisterRoutes(v1)
 
 	middleware := middlewares.MiddlewareChain()
 
