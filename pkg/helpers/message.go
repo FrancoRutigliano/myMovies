@@ -13,10 +13,6 @@ type APIError struct {
 	Msg        any `json:"msg"`
 }
 
-func (e APIError) Error() string {
-	return fmt.Sprintf("api error: %d", e.StatusCode)
-}
-
 func NewAPIError(statusCode int, message string) APIError {
 	return APIError{
 		StatusCode: statusCode,
@@ -26,7 +22,7 @@ func NewAPIError(statusCode int, message string) APIError {
 
 func SendCustom(w http.ResponseWriter, statusCode int, message string) {
 	apiErr := NewAPIError(statusCode, message)
-	WriteJson(w, statusCode, apiErr)
+	WriteJson(w, statusCode, apiErr, "error")
 }
 
 func InvalidRequestData(errors map[string]string) APIError {
@@ -44,12 +40,22 @@ func ParseJson(r *http.Request, Payload any) error {
 	return json.NewDecoder(r.Body).Decode(Payload)
 }
 
-func WriteJson(w http.ResponseWriter, status int, v any) error {
-	w.Header().Add("Content-Type", "applcation/json")
+func WriteJson(w http.ResponseWriter, status int, data interface{}, entity string) error {
+	js, err := json.MarshalIndent(data, "", "\t")
+	if err != nil {
+		return err
+	}
 
+	js = append(js, '\n')
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
-	return json.NewEncoder(w).Encode(v)
+	jsonData := map[string]interface{}{
+		entity: data,
+	}
+
+	return json.NewEncoder(w).Encode(jsonData)
 }
 
 func ReadIdParam(r *http.Request) (int64, error) {
