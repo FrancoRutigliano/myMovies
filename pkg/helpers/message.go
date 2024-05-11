@@ -6,7 +6,11 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+
+	"github.com/go-playground/validator/v10"
 )
+
+var Validate = validator.New()
 
 type APIError struct {
 	StatusCode int `json:"statuscode"`
