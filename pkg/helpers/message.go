@@ -2,9 +2,11 @@ package helpers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strconv"
 )
 
 type APIError struct {
@@ -67,4 +69,15 @@ func WriteJson(w http.ResponseWriter, status int, v any) error {
 	w.WriteHeader(status)
 
 	return json.NewEncoder(w).Encode(v)
+}
+
+func ReadIdParam(r *http.Request) (int64, error) {
+	param := r.PathValue("id")
+
+	id, err := strconv.ParseInt(param, 10, 64)
+	if err != nil || id < 1 {
+		return 0, errors.New("invalid id param")
+	}
+
+	return id, nil
 }
