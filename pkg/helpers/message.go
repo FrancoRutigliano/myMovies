@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -22,7 +23,7 @@ func NewAPIError(statusCode int, err error) APIError {
 	}
 }
 
-func InvalidRequestError(errors map[string]string) APIError {
+func InvalidRequestData(errors map[string]string) APIError {
 	return APIError{
 		StatusCode: http.StatusUnprocessableEntity,
 		Msg:        errors,
@@ -39,16 +40,31 @@ func make(h APIFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := h(w, r); err != nil {
 			if apiErr, ok := err.(APIError); ok {
-				//write json
+				WriteJson(w, apiErr.StatusCode, apiErr)
 			} else {
 				errResp := map[string]any{
 					"statuscode": http.StatusInternalServerError,
 					"msg":        "internal server error",
 				}
-
-				//write json
+				WriteJson(w, http.StatusInternalServerError, errResp)
 			}
 			slog.Error("HTTP API error", "err", err.Error(), "path", r.URL.Path)
 		}
 	}
+}
+
+func ParseJson(r *http.Request, Payload any) error {
+	if r.Body == nil {
+		return fmt.Errorf("missing request body")
+	}
+
+	return json.NewDecoder(r.Body).Decode(Payload)
+}
+
+func WriteJson(w http.ResponseWriter, status int, v any) error {
+	w.Header().Add("Content-Type", "applcation/json")
+
+	w.WriteHeader(status)
+
+	return json.NewEncoder(w).Encode(v)
 }
