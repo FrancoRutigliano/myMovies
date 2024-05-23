@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/FrancoRutigliano/myMovies/internal/handlers"
+	"github.com/FrancoRutigliano/myMovies/internal/service"
 	"github.com/FrancoRutigliano/myMovies/pkg/middlewares"
 )
 
@@ -33,7 +34,12 @@ func (app *APIServer) Run() error {
 	moviesHandler := handlers.MovieHandler{}
 	moviesHandler.RegisterRoutes(v1)
 
-	authHandler := handlers.AuthHandler{}
+	// auth
+	authStore, err := service.NewStore("./data/user.json")
+	if err != nil {
+		return err
+	}
+	authHandler := handlers.NewHandler(authStore)
 	authHandler.RegisterRoutes(v1)
 
 	middleware := middlewares.MiddlewareChain()
