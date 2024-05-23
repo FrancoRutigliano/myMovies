@@ -33,8 +33,8 @@ func (app *APIServer) Run() error {
 	moviesHandler := handlers.MovieHandler{}
 	moviesHandler.RegisterRoutes(v1)
 
-	usersHandler := handlers.UserHandler{}
-	usersHandler.RegisterRoutes(v1)
+	authHandler := handlers.AuthHandler{}
+	authHandler.RegisterRoutes(v1)
 
 	middleware := middlewares.MiddlewareChain()
 
