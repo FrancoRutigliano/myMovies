@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 )
 
 func ParseJson(r *http.Request, Payload any) error {
@@ -30,4 +31,16 @@ func WriteJson(w http.ResponseWriter, status int, data interface{}, entity strin
 	}
 
 	return json.NewEncoder(w).Encode(jsonData)
+}
+
+// StoreJson serializa la estructura proporcionada y la guarda en un archivo JSON.
+func StoreJson(filename string, v interface{}) error {
+	// Serializar la estructura a JSON
+	data, err := json.MarshalIndent(v, "", "\t")
+	if err != nil {
+		return fmt.Errorf("error serializing data: %v", err)
+	}
+
+	// Escribir el archivo
+	return os.WriteFile(filename, data, 0644)
 }
