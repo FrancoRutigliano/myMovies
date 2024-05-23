@@ -8,7 +8,15 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type AuthHandler struct{}
+type AuthHandler struct {
+	store models.UserAuth
+}
+
+func NewHandler(store models.UserAuth) *AuthHandler {
+	return &AuthHandler{
+		store: store,
+	}
+}
 
 func (auth *AuthHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /auth/register", auth.RegisterUser)
@@ -29,6 +37,11 @@ func (auth *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: Si el usuario existe por el email, retornar un error
+	err := auth.store.EmailExist(payload.Email)
+	if err != nil {
+		utils.SendCustom(w, http.StatusBadRequest, err.Error())
+	}
 }
 
 func (auth *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
