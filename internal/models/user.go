@@ -2,10 +2,11 @@ package models
 
 type User struct {
 	ID        int64       `json:"id,omitempty"`
-	Email     string      `json:"email" validate:"required,email"`
-	Password  string      `json:"password" validate:"required"`
+	Name      string      `json:"name"`
+	Email     string      `json:"email"`
+	Password  string      `json:"password"`
 	Movies    []UserMovie `json:"movies"`
-	Role      string      `json:"role" validate:"required,oneof=admin user employee"`
+	Role      string      `json:"role"`
 	CreatedAt string      `json:"created_at"`
 }
 
