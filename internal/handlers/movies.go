@@ -51,7 +51,7 @@ func (m *MovieHandler) CreateMovie(w http.ResponseWriter, r *http.Request) {
 
 	if err := utils.Validate.Struct(payload); err != nil {
 		_ = err.(validator.ValidationErrors)
-		utils.SendCustom(w, http.StatusBadRequest, err.Error())
+		utils.SendCustom(w, http.StatusUnprocessableEntity, err.Error())
 		return
 	}
 
