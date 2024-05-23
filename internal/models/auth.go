@@ -1,8 +1,8 @@
 package models
 
 type UserAuth interface {
-	FindByEmail(string) (*User, error)
-	Create(User) error
+	EmailExist(string) error
+	CreateUser(*User) error
 }
 
 type UserRegister struct {
