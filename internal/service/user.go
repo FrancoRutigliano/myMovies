@@ -74,3 +74,12 @@ func (s *Store) FindByEmail(email string) (*models.User, error) {
 
 	return nil, fmt.Errorf("user not found")
 }
+
+func (s *Store) EmailExist(email string) error {
+	for _, user := range *s.Users {
+		if user.Email == email {
+			return fmt.Errorf("email user already exists")
+		}
+	}
+	return nil
+}
