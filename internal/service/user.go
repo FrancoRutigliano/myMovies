@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/FrancoRutigliano/myMovies/internal/models"
+	"github.com/FrancoRutigliano/myMovies/pkg/helpers"
 )
 
 type Store struct {
@@ -82,4 +83,11 @@ func (s *Store) EmailExist(email string) error {
 		}
 	}
 	return nil
+}
+
+func (s *Store) CreateUser(user *models.User) error {
+	*s.Users = append(*s.Users, *user)
+
+	// guardar los cambios en el json
+	return helpers.StoreJson("./data/user.json", *s.Users)
 }
