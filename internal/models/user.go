@@ -2,6 +2,7 @@ package models
 
 type Users interface {
 	GetAll() []User
+	FindByEmail(email string) (*User, error)
 }
 
 type User struct {
