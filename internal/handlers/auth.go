@@ -13,7 +13,7 @@ type AuthHandler struct {
 	store models.UserAuth
 }
 
-func NewHandler(store models.UserAuth) *AuthHandler {
+func NewAuthHandler(store models.UserAuth) *AuthHandler {
 	return &AuthHandler{
 		store: store,
 	}
