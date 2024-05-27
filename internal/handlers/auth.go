@@ -66,4 +66,30 @@ func (auth *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (auth *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
+	// Payload
+	var payload models.UserLogin
+	if err := helpers.ParseJson(r, &payload); err != nil {
+		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := helpers.Validate.Struct(&payload); err != nil {
+		_ = err.(validator.ValidationErrors)
+		helpers.SendCustom(w, http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	// TODO: Verificar si el usuario existe
+	user, err := auth.store.FindByEmail(payload.Email)
+	if err != nil {
+		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
+	}
+
+	if !helpers.ComparePassword(user.Password, []byte(payload.Password)) {
+		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	helpers.WriteJson(w, http.StatusOK, "Succesfully LogIn", "LogIn")
+
 }

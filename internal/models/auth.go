@@ -3,6 +3,7 @@ package models
 type UserAuth interface {
 	EmailExist(string) error
 	CreateUser(*User) error
+	FindByEmail(string) (*User, error)
 }
 
 type UserRegister struct {
