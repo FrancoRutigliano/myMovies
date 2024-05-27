@@ -39,7 +39,7 @@ func (app *APIServer) Run() error {
 	if err != nil {
 		return err
 	}
-	authHandler := handlers.NewHandler(authStore)
+	authHandler := handlers.NewAuthHandler(authStore)
 	authHandler.RegisterRoutes(v1)
 
 	// USER
@@ -47,7 +47,7 @@ func (app *APIServer) Run() error {
 	if err != nil {
 		return err
 	}
-	userHandler := handlers.NewHandler(userStore)
+	userHandler := handlers.NewUserHandler(userStore)
 	userHandler.RegisterRoutes(v1)
 
 	middleware := middlewares.MiddlewareChain()
