@@ -91,3 +91,7 @@ func (s *Store) CreateUser(user *models.User) error {
 	// guardar los cambios en el json
 	return helpers.StoreJson("./data/user.json", *s.Users)
 }
+
+func (s *Store) GetAll() []models.User {
+	return *s.Users
+}
