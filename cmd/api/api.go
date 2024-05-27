@@ -42,6 +42,14 @@ func (app *APIServer) Run() error {
 	authHandler := handlers.NewHandler(authStore)
 	authHandler.RegisterRoutes(v1)
 
+	// USER
+	userStore, err := service.NewStore("./data/user.json")
+	if err != nil {
+		return err
+	}
+	userHandler := handlers.NewHandler(userStore)
+	userHandler.RegisterRoutes(v1)
+
 	middleware := middlewares.MiddlewareChain()
 
 	// SERVER
