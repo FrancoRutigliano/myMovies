@@ -86,6 +86,10 @@ func (s *Store) EmailExist(email string) error {
 }
 
 func (s *Store) CreateUser(user *models.User) error {
+
+	idUser := len(*s.Users) + 1
+	user.ID = int64(idUser)
+
 	*s.Users = append(*s.Users, *user)
 
 	// guardar los cambios en el json
