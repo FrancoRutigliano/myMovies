@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/FrancoRutigliano/myMovies/internal/models"
@@ -91,6 +92,15 @@ func (auth *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	helpers.WriteJson(w, http.StatusOK, "Succesfully LogIn", "LogIn")
+	// JWT token secret
+	secret := []byte(os.Getenv("JWT_SECRET"))
+
+	// Generando token
+	token, err := authHelpers.CreateJwt(secret, user.Role, user.Email)
+	if err != nil {
+		helpers.SendCustom(w, http.StatusInternalServerError, err.Error())
+	}
+
+	helpers.WriteJson(w, http.StatusOK, token, "token")
 
 }
