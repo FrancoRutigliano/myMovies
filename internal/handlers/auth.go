@@ -6,6 +6,7 @@ import (
 
 	"github.com/FrancoRutigliano/myMovies/internal/models"
 	"github.com/FrancoRutigliano/myMovies/pkg/helpers"
+	authHelpers "github.com/FrancoRutigliano/myMovies/pkg/helpers/auth"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -45,7 +46,7 @@ func (auth *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: hash el password
-	hashPassword, err := helpers.HashPassword(payload.Password)
+	hashPassword, err := authHelpers.HashPassword(payload.Password)
 	if err != nil {
 		helpers.SendCustom(w, http.StatusInternalServerError, err.Error())
 	}
@@ -85,7 +86,7 @@ func (auth *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
 	}
 
-	if !helpers.ComparePassword(user.Password, []byte(payload.Password)) {
+	if !authHelpers.ComparePassword(user.Password, []byte(payload.Password)) {
 		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
 		return
 	}
