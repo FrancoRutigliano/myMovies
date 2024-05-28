@@ -2,24 +2,23 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"github.com/FrancoRutigliano/myMovies/cmd/api"
-	"github.com/joho/godotenv"
+	"github.com/FrancoRutigliano/myMovies/config"
 )
 
 func main() {
-	err := godotenv.Load()
+	config, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("error loading .env file: %v", err)
+		log.Fatalf("error to inicialize the server: %v", err)
 	}
 
-	portStr := ":" + os.Getenv("PORT")
-	if portStr == "" {
+	port := ":" + config.PORT
+	if port == "" {
 		log.Fatal("PORT is not set in .env file")
 	}
 
-	app := api.NewAPIServer(portStr)
+	app := api.NewAPIServer(port)
 
 	if err := app.Run(); err != nil {
 		log.Fatal("error to inicialize the server")
