@@ -1,4 +1,6 @@
-.env
+#envs
+.development.env
+.production.env
 
 /bin
 
