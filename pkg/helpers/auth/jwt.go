@@ -1,17 +1,17 @@
 package authHelpers
 
 import (
-	"errors"
+	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/spf13/viper"
 )
 
 func CreateJwt(secret []byte, userRole, userEmail string) (string, error) {
-	// expira en 24 horas == 1 día
+	// Expira en 24 horas == 1 día
 	expiration := time.Now().Add(time.Hour * 24).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -20,7 +20,7 @@ func CreateJwt(secret []byte, userRole, userEmail string) (string, error) {
 		"expiredAt": expiration,
 	})
 
-	// firmar el token
+	// Firmar el token
 	tokenStr, err := token.SignedString(secret)
 	if err != nil {
 		return "", err
@@ -34,23 +34,27 @@ func GetTokenFromRequest(r *http.Request) string {
 
 	// verificamos si el encabezado no esta vacio
 	// y el prefijo Bearer
-	if len(tokenAuth) == 0 && strings.HasPrefix(tokenAuth, "Bearer") {
-		return strings.TrimPrefix(tokenAuth, "Bearer ")
+	if tokenAuth != "" {
+		return tokenAuth
 	}
-	// si el encabezado authorization no tiene nada o no comienza con bearer devolvemos vacio
 	return ""
 }
 
 // Validar un token JWT implica verificar su integridad y autenticidad para asegurarse
 // de que no ha sido alterado y de que fue emitido por una fuente confiable
+// Función para validar el token
 func ValidateToken(t string) (*jwt.Token, error) {
-	// utilizamos esta funcion para analizar al token
-	return jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
-		// verificamos que la firma del token sea valida
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("invalid token")
-		}
+	// Parseamos el token
+	t = strings.TrimPrefix(t, "Bearer ")
 
-		return []byte(viper.GetString("JWT_SECRET")), nil
+	token, err := jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
+	if err != nil {
+		return nil, err
+	}
+	return token, nil
 }
