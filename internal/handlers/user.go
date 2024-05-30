@@ -5,6 +5,7 @@ import (
 
 	"github.com/FrancoRutigliano/myMovies/internal/models"
 	"github.com/FrancoRutigliano/myMovies/pkg/helpers"
+	"github.com/FrancoRutigliano/myMovies/pkg/middlewares"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -19,8 +20,10 @@ func NewUserHandler(store models.Users) *UserHandler {
 }
 
 func (u *UserHandler) RegisterRoutes(router *http.ServeMux) {
-	router.HandleFunc("GET /users", u.GetAllUsers)
-	router.HandleFunc("POST /user/email", u.GetUserByEmail)
+	userMiddleware := middlewares.RoleMiddleware("user")
+	adminMiddleware := middlewares.RoleMiddleware("admin")
+	router.HandleFunc("GET /users", userMiddleware(u.GetAllUsers))
+	router.HandleFunc("POST /user/email", adminMiddleware(u.GetUserByEmail))
 }
 
 func (u *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
