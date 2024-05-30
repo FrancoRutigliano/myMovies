@@ -1,11 +1,13 @@
 package authHelpers
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/spf13/viper"
 )
 
 func CreateJwt(secret []byte, userRole, userEmail string) (string, error) {
@@ -37,4 +39,18 @@ func GetTokenFromRequest(r *http.Request) string {
 	}
 	// si el encabezado authorization no tiene nada o no comienza con bearer devolvemos vacio
 	return ""
+}
+
+// Validar un token JWT implica verificar su integridad y autenticidad para asegurarse
+// de que no ha sido alterado y de que fue emitido por una fuente confiable
+func ValidateToken(t string) (*jwt.Token, error) {
+	// utilizamos esta funcion para analizar al token
+	return jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
+		// verificamos que la firma del token sea valida
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid token")
+		}
+
+		return []byte(viper.GetString("JWT_SECRET")), nil
+	})
 }
