@@ -9,9 +9,9 @@ import (
 	"github.com/FrancoRutigliano/myMovies/pkg/middlewares"
 )
 
-type Handler interface {
-	RegisterRoutes(router *http.ServeMux)
-}
+// type Handler interface {
+// 	RegisterRoutes(router *http.ServeMux)
+// }
 
 type APIServer struct {
 	addr string
@@ -26,7 +26,6 @@ func NewAPIServer(addr string) *APIServer {
 func (app *APIServer) Run() error {
 	// ENRUTADOR
 	router := http.NewServeMux()
-
 	v1 := http.NewServeMux()
 
 	v1.Handle("/v1/", http.StripPrefix("/v1/", router))
