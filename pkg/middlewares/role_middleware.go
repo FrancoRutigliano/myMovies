@@ -31,6 +31,9 @@ func RoleMiddleware(expRole string) func(http.Handler) http.HandlerFunc {
 			}
 
 			role := claims["userRole"].(string)
+			if role == "admin" {
+				next.ServeHTTP(w, r)
+			}
 			// si el rol no coincide
 			if role != expRole {
 				helpers.SendCustom(w, http.StatusForbidden, "Unauthorized")
