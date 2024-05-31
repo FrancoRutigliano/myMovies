@@ -13,12 +13,7 @@ func main() {
 		log.Fatalf("error to inicialize the server: %v", err)
 	}
 
-	port := ":" + config.PORT
-	if port == "" {
-		log.Fatal("PORT is not set in .env file")
-	}
-
-	app := api.NewAPIServer(port)
+	app := api.NewAPIServer(config.PORT)
 
 	if err := app.Run(); err != nil {
 		log.Fatal("error to inicialize the server")
