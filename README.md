@@ -17,10 +17,12 @@ Esta aplicación...
 
 ## Get Started
 1.Clona el repositorio.
-  1.1 ```
+
 2.Clona `.example.env` en `.developemnt.env`
+
 3.Ejecuta el comando `make run-dev` para ejecutar la aplicación en modo desarrollo.
-4.Y listo :)
+
+4. Y listo :)
 
 ## Features 
 
