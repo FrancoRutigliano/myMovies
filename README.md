@@ -4,6 +4,14 @@
 
 <div align="center"><i>Vive la magia del cine con una reserva de entradas sin complicaciones.</i></div>
 
+<hr />
+
+<p align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=,go,github" />
+  </a>
+</p>
+
 ## ABOUT
 Esta aplicación...
 
