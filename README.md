@@ -1,3 +1,9 @@
+<h3 align="center">
+  <img src="assets/logo.jpg" width="300" alt="Logo"/><br/>
+</h3>
+
+<div align="center"><i>Vive la magia del cine con una reserva de entradas sin complicaciones.</i></div>
+
 ## ABOUT
 Esta aplicación...
 
