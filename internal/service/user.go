@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 
@@ -98,4 +99,14 @@ func (s *Store) CreateUser(user *models.User) error {
 
 func (s *Store) GetAll() []models.User {
 	return *s.Users
+}
+
+func (s *Store) UpdateUserPassword(user *models.User) error {
+	for i, u := range *s.Users {
+		if u.ID == user.ID {
+			(*s.Users)[i].Password = user.Password
+			return helpers.StoreJson("./data/user.json", *s.Users)
+		}
+	}
+	return errors.New("user not found")
 }
