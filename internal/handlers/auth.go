@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -22,8 +23,10 @@ func NewAuthHandler(store models.UserAuth) *AuthHandler {
 }
 
 func (auth *AuthHandler) RegisterRoutes(router *http.ServeMux) {
+
 	router.HandleFunc("POST /auth/register", auth.RegisterUser)
 	router.HandleFunc("POST /auth/login", auth.LoginUser)
+	router.HandleFunc("PUT /auth/change-password", auth.ChangePassword)
 }
 
 func (auth *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
@@ -85,10 +88,11 @@ func (auth *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	user, err := auth.store.FindByEmail(payload.Email)
 	if err != nil {
 		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	if !authHelpers.ComparePassword(user.Password, []byte(payload.Password)) {
-		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
+		helpers.SendCustom(w, http.StatusBadRequest, "invalid credentials")
 		return
 	}
 
@@ -98,9 +102,52 @@ func (auth *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	// Generando token
 	token, err := authHelpers.CreateJwt(secret, user.Role, user.Email)
 	if err != nil {
-		helpers.SendCustom(w, http.StatusInternalServerError, err.Error())
+		helpers.SendCustom(w, http.StatusInternalServerError, "opps, something went wrong")
 	}
 
 	helpers.WriteJson(w, http.StatusOK, token, "token")
 
+}
+
+func (auth *AuthHandler) ChangePassword(w http.ResponseWriter, r *http.Request) {
+	// Payload
+	var payload models.ChangePassword
+
+	log.Print("parsing payload")
+	if err := helpers.ParseJson(r, &payload); err != nil {
+		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := helpers.Validate.Struct(&payload); err != nil {
+		_ = err.(validator.ValidationErrors)
+		helpers.SendCustom(w, http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	user, err := auth.store.FindByEmail(payload.Email)
+	if err != nil {
+		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if !authHelpers.ComparePassword(user.Password, []byte(payload.Password)) {
+		helpers.SendCustom(w, http.StatusBadRequest, "invalid password")
+		return
+	}
+
+	hashPassword, err := authHelpers.HashPassword(payload.NewPassword)
+	if err != nil {
+		helpers.SendCustom(w, http.StatusInternalServerError, "opps, something went wrong")
+	}
+
+	err = auth.store.UpdateUserPassword(&models.User{
+		ID:       user.ID,
+		Password: hashPassword,
+	})
+	if err != nil {
+		helpers.SendCustom(w, http.StatusInternalServerError, "opps, something went wrong")
+	}
+
+	helpers.SendCustom(w, http.StatusOK, "password changed successfully")
 }

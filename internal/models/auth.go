@@ -4,6 +4,7 @@ type UserAuth interface {
 	EmailExist(string) error
 	CreateUser(*User) error
 	FindByEmail(string) (*User, error)
+	UpdateUserPassword(*User) error
 }
 
 type UserRegister struct {
@@ -15,4 +16,10 @@ type UserRegister struct {
 type UserLogin struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=6"`
+}
+
+type ChangePassword struct {
+	Email       string `json:"email" validate:"required,email"`
+	Password    string `json:"password" validate:"required,min=6"`
+	NewPassword string `json:"new_password" validate:"required,min=6"`
 }
