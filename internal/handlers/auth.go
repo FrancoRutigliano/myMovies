@@ -52,7 +52,7 @@ func (auth *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	// TODO: hash el password
 	hashPassword, err := authHelpers.HashPassword(payload.Password)
 	if err != nil {
-		helpers.SendCustom(w, http.StatusInternalServerError, err.Error())
+		helpers.SendCustom(w, http.StatusInternalServerError, "oops, something went wrong")
 	}
 
 	// TODO: Crear el usuario
@@ -64,7 +64,7 @@ func (auth *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		CreatedAt: time.Now().Format(time.RFC3339),
 	})
 	if err != nil {
-		helpers.SendCustom(w, http.StatusInternalServerError, err.Error())
+		helpers.SendCustom(w, http.StatusInternalServerError, "oops, something went wrong")
 	}
 
 	helpers.WriteJson(w, http.StatusCreated, payload, "user")
