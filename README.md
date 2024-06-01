@@ -30,6 +30,7 @@ Esta aplicación...
 - [x] Implementar endpoint para registro de nuevos usuarios.
 - [x] Implementar endpoint para inicio de sesión de usuarios existentes.
 - [X] Implementar sistema de gestión de tokens JWT para autenticación segura.
+- [X] Implementar endpoint para que los usuarios puedan gestionar un cambio de contraseña. 
 
 ### Gestión de Roles y Permisos:
 - [x] Definir roles necesarios para el sistema (por ejemplo, administrador, usuario regular, etc.).
