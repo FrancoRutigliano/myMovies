@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -25,6 +26,8 @@ func RoleMiddleware(expRole string) func(http.HandlerFunc) http.HandlerFunc {
 				return
 			}
 
+			ctx := context.WithValue(r.Context(), "user_token", t)
+
 			claims, ok := t.Claims.(jwt.MapClaims)
 			if !ok || !t.Valid {
 				fmt.Println("Invalid claims or token is not valid")
@@ -45,7 +48,7 @@ func RoleMiddleware(expRole string) func(http.HandlerFunc) http.HandlerFunc {
 				return
 			}
 
-			next(w, r)
+			next(w, r.WithContext(ctx))
 		}
 	}
 }
