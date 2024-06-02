@@ -70,7 +70,13 @@ func initializeStoreWithDefaults(fileName string) error {
 func (s *Store) FindByEmail(email string) (*models.User, error) {
 	for _, user := range *s.Users {
 		if user.Email == email {
-			return &user, nil
+			userProfile := &models.User{
+				Name:   user.Name,
+				Email:  user.Email,
+				Movies: user.Movies,
+			}
+			return userProfile, nil
+
 		}
 	}
 
