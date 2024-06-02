@@ -9,7 +9,15 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type MovieHandler struct{}
+type MovieHandler struct {
+	store models.Movie
+}
+
+func NewMovieHandler(store models.Movie) *MovieHandler {
+	return &MovieHandler{
+		store: store,
+	}
+}
 
 func (m *MovieHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("GET /movies/{id}", m.GetMovieById)
