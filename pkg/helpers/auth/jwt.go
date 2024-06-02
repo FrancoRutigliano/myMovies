@@ -1,6 +1,7 @@
 package authHelpers
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -57,4 +58,24 @@ func ValidateToken(t string) (*jwt.Token, error) {
 		return nil, err
 	}
 	return token, nil
+}
+
+func GetEmailFromToken(ctx context.Context) (string, error) {
+	token, ok := ctx.Value("user_token").(*jwt.Token)
+	if !ok {
+		return "", fmt.Errorf("invalid token")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", fmt.Errorf("invalid claims")
+	}
+
+	email, ok := claims["email"].(string)
+	if !ok {
+		return "", fmt.Errorf("invalid claim in jwt")
+	}
+
+	return email, nil
+
 }
