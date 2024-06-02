@@ -10,16 +10,21 @@ import (
 	"github.com/FrancoRutigliano/myMovies/pkg/helpers"
 )
 
-type Store struct {
+var defaultUsers = []models.User{
+	{Name: "Usuario 1", Email: "usuario1@example.com", Password: "contraseña1"},
+	{Name: "Usuario 2", Email: "usuario2@example.com", Password: "contraseña2"},
+}
+
+type UserStore struct {
 	Users *[]models.User
 }
 
-func NewStore(fileName string) (*Store, error) {
+func NewUserStore(filename string) (*UserStore, error) {
 	// Verificar si el archivo existe
-	_, err := os.Stat(fileName)
+	_, err := os.Stat(filename)
 	if os.IsNotExist(err) {
 		// El archivo no existe, inicializar con datos predeterminados
-		err := initializeStoreWithDefaults(fileName)
+		err := helpers.InitializeStoreWithDefaults(filename, defaultUsers)
 		if err != nil {
 			return nil, err
 		}
@@ -28,7 +33,7 @@ func NewStore(fileName string) (*Store, error) {
 	}
 
 	// Abrir el archivo JSON
-	file, err := os.Open(fileName)
+	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}
@@ -40,34 +45,10 @@ func NewStore(fileName string) (*Store, error) {
 		return nil, err
 	}
 
-	return &Store{Users: &users}, nil
+	return &UserStore{Users: &users}, nil
 }
 
-func initializeStoreWithDefaults(fileName string) error {
-	// Crear una estructura de datos inicial con datos predeterminados
-	defaultUsers := []models.User{
-		{Name: "Usuario 1", Email: "usuario1@example.com", Password: "contraseña1"},
-		{Name: "Usuario 2", Email: "usuario2@example.com", Password: "contraseña2"},
-		// Agregar más usuarios predeterminados si es necesario
-	}
-
-	// Abrir o crear el archivo JSON
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	// Codificar y escribir los datos predeterminados en el archivo JSON
-	encoder := json.NewEncoder(file)
-	if err := encoder.Encode(defaultUsers); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *Store) FindByEmail(email string) (*models.User, error) {
+func (s *UserStore) FindByEmail(email string) (*models.User, error) {
 	for _, user := range *s.Users {
 		if user.Email == email {
 			userProfile := &models.User{
@@ -83,7 +64,7 @@ func (s *Store) FindByEmail(email string) (*models.User, error) {
 	return nil, fmt.Errorf("user not found")
 }
 
-func (s *Store) EmailExist(email string) error {
+func (s *UserStore) EmailExist(email string) error {
 	for _, user := range *s.Users {
 		if user.Email == email {
 			return fmt.Errorf("email user already exists")
@@ -92,7 +73,7 @@ func (s *Store) EmailExist(email string) error {
 	return nil
 }
 
-func (s *Store) CreateUser(user *models.User) error {
+func (s *UserStore) CreateUser(user *models.User) error {
 
 	idUser := len(*s.Users) + 1
 	user.ID = int64(idUser)
@@ -103,11 +84,11 @@ func (s *Store) CreateUser(user *models.User) error {
 	return helpers.StoreJson("./data/user.json", *s.Users)
 }
 
-func (s *Store) GetAll() []models.User {
+func (s *UserStore) GetAll() []models.User {
 	return *s.Users
 }
 
-func (s *Store) UpdateUserPassword(user *models.User) error {
+func (s *UserStore) UpdateUserPassword(user *models.User) error {
 	for i, u := range *s.Users {
 		if u.ID == user.ID {
 			(*s.Users)[i].Password = user.Password

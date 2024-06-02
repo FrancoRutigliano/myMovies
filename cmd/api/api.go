@@ -34,7 +34,7 @@ func (app *APIServer) Run() error {
 	moviesHandler.RegisterRoutes(v1)
 
 	// auth
-	authStore, err := service.NewStore("./data/user.json")
+	authStore, err := service.NewUserStore("./data/user.json")
 	if err != nil {
 		return err
 	}
@@ -42,7 +42,7 @@ func (app *APIServer) Run() error {
 	authHandler.RegisterRoutes(v1)
 
 	// USER
-	userStore, err := service.NewStore("./data/user.json")
+	userStore, err := service.NewUserStore("./data/user.json")
 	if err != nil {
 		return err
 	}
