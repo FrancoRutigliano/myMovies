@@ -1,8 +1,10 @@
 package helpers
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
@@ -43,4 +45,17 @@ func ReadIdParam(r *http.Request) (int64, error) {
 	}
 
 	return id, nil
+}
+
+func InitializeStoreWithDefaults(f string, data interface{}) error {
+	file, err := os.Create(f)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	if err := json.NewEncoder(file).Encode(data); err != nil {
+		return err
+	}
+	return nil
 }
