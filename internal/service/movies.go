@@ -43,3 +43,11 @@ func NewMovieStore(filename string) (*MovieStore, error) {
 	}
 	return &MovieStore{Movies: &movies}, nil
 }
+
+func (s *MovieStore) CreateMovie(movie *models.Movie) error {
+	idMovie := len(*s.Movies) + 1
+	movie.ID = int64(idMovie)
+
+	*s.Movies = append(*s.Movies, *movie)
+	return helpers.StoreJson("./data/movies.json", *s.Movies)
+}
