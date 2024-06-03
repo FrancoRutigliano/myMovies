@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"os"
 
 	"github.com/FrancoRutigliano/myMovies/internal/models"
@@ -50,4 +51,13 @@ func (s *MovieStore) CreateMovie(movie *models.Movie) error {
 
 	*s.Movies = append(*s.Movies, *movie)
 	return helpers.StoreJson("./data/movies.json", *s.Movies)
+}
+
+func (s *MovieStore) FindById(id int64) (*models.Movie, error) {
+	for _, movie := range *s.Movies {
+		if id == movie.ID {
+			return &movie, nil
+		}
+	}
+	return nil, errors.New("movie not found")
 }
