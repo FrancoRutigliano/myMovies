@@ -2,6 +2,14 @@ package models
 
 import "time"
 
+type Movies interface {
+	FindById(int64) (*Movie, error)
+	FindAll() ([]Movie, error)
+	CreateMovie(*Movie) error
+	UpdateMovie(*Movie) error
+	DeleteMovie(int64) error
+}
+
 type Movie struct {
 	ID        int64     `json:"id,omitempty"`
 	CreatedAt time.Time `json:"created_at"`
