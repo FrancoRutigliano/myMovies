@@ -30,9 +30,6 @@ func (app *APIServer) Run() error {
 
 	v1.Handle("/v1/", http.StripPrefix("/v1/", router))
 
-	moviesHandler := handlers.MovieHandler{}
-	moviesHandler.RegisterRoutes(v1)
-
 	// auth
 	authStore, err := service.NewUserStore("./data/user.json")
 	if err != nil {
@@ -48,6 +45,14 @@ func (app *APIServer) Run() error {
 	}
 	userHandler := handlers.NewUserHandler(userStore)
 	userHandler.RegisterRoutes(v1)
+
+	// Movies
+	movieStore, err := service.NewMovieStore("./data/movies.json")
+	if err != nil {
+		return err
+	}
+	movieHandler := handlers.NewMovieHandler(movieStore)
+	movieHandler.RegisterRoutes(v1)
 
 	middleware := middlewares.MiddlewareChain()
 
