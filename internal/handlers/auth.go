@@ -44,9 +44,9 @@ func (auth *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: Si el usuario existe por el email, retornar un error
-	err := auth.store.EmailExist(payload.Email)
-	if err != nil {
-		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
+	if _, ok := auth.store.EmailExist(payload.Email); !ok {
+		helpers.SendCustom(w, http.StatusBadRequest, "user already exists")
+		return
 	}
 
 	// TODO: hash el password

@@ -49,28 +49,26 @@ func NewUserStore(filename string) (*UserStore, error) {
 }
 
 func (s *UserStore) FindByEmail(email string) (*models.User, error) {
-	for _, user := range *s.Users {
-		if user.Email == email {
-			userProfile := &models.User{
-				Name:   user.Name,
-				Email:  user.Email,
-				Movies: user.Movies,
-			}
-			return userProfile, nil
+	user, ok := s.EmailExist(email)
 
+	if ok {
+		userProfile := &models.User{
+			Name:   user.Name,
+			Email:  user.Email,
+			Movies: user.Movies,
 		}
+		return userProfile, nil
 	}
-
 	return nil, fmt.Errorf("user not found")
 }
 
-func (s *UserStore) EmailExist(email string) error {
+func (s *UserStore) EmailExist(email string) (*models.User, bool) {
 	for _, user := range *s.Users {
 		if user.Email == email {
-			return fmt.Errorf("email user already exists")
+			return &user, true
 		}
 	}
-	return nil
+	return nil, false
 }
 
 func (s *UserStore) CreateUser(user *models.User) error {
