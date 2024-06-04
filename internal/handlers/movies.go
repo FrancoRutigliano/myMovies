@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/FrancoRutigliano/myMovies/internal/models"
+	"github.com/FrancoRutigliano/myMovies/pkg/helpers"
 )
 
 type MovieHandler struct {
@@ -17,14 +18,15 @@ func NewMovieHandler(store models.Movies) *MovieHandler {
 }
 
 func (m *MovieHandler) RegisterRoutes(router *http.ServeMux) {
-	router.HandleFunc("GET /movies/{id}", m.GetMovieById)
-	router.HandleFunc("POST /movies", m.CreateMovie)
+	router.HandleFunc("GET /movies", m.GetAllMovies)
 }
 
-func (m *MovieHandler) GetMovieById(w http.ResponseWriter, r *http.Request) {
+func (m *MovieHandler) GetAllMovies(w http.ResponseWriter, r *http.Request) {
+	movies, err := m.store.FindAll()
+	if err != nil {
+		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
+		return
+	}
 
-}
-
-func (m *MovieHandler) CreateMovie(w http.ResponseWriter, r *http.Request) {
-
+	helpers.WriteJson(w, http.StatusOK, movies, "movies")
 }

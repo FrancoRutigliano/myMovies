@@ -61,3 +61,19 @@ func (s *MovieStore) FindById(id int64) (*models.Movie, error) {
 	}
 	return nil, errors.New("movie not found")
 }
+
+func (s *MovieStore) FindAll() ([]models.Movie, error) {
+	if len(*s.Movies) == 0 {
+		return nil, errors.New("no movies found")
+	}
+
+	return *s.Movies, nil
+}
+
+func (s *MovieStore) UpdateMovie(movie *models.Movie) error {
+	panic("implement me")
+}
+
+func (s *MovieStore) DeleteMovie(id int64) error {
+	panic("implement me")
+}
