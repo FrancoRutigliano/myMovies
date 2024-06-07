@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"time"
 
 	"github.com/FrancoRutigliano/myMovies/internal/models"
 	"github.com/FrancoRutigliano/myMovies/pkg/helpers"
@@ -60,6 +61,7 @@ func (s *MovieStore) CreateMovie(movie *models.Movie) error {
 	}
 	idMovie := len(*s.Movies) + 1
 	movie.ID = int64(idMovie)
+	movie.CreatedAt = time.Now().Format(time.RFC3339)
 
 	*s.Movies = append(*s.Movies, *movie)
 	return helpers.StoreJson("./data/movies.json", *s.Movies)
