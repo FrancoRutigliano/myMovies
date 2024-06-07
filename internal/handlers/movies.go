@@ -49,6 +49,7 @@ func (m *MovieHandler) CreateMovie(w http.ResponseWriter, r *http.Request) {
 	// TODO Verificar si la movie no esta creada ya. Si no esta creada la creamos
 	if err := m.store.CreateMovie(&payload); err != nil {
 		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	helpers.WriteJson(w, http.StatusCreated, payload, "movie")
