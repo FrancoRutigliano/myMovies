@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"time"
 
 	"github.com/FrancoRutigliano/myMovies/internal/models"
 	"github.com/FrancoRutigliano/myMovies/pkg/helpers"
@@ -45,9 +46,22 @@ func NewMovieStore(filename string) (*MovieStore, error) {
 	return &MovieStore{Movies: &movies}, nil
 }
 
+func (s *MovieStore) movieExist(t string) bool {
+	for _, movie := range *s.Movies {
+		if movie.Title == t {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *MovieStore) CreateMovie(movie *models.Movie) error {
+	if ok := s.movieExist(movie.Title); ok {
+		return errors.New("movie already exists")
+	}
 	idMovie := len(*s.Movies) + 1
 	movie.ID = int64(idMovie)
+	movie.CreatedAt = time.Now().Format(time.RFC3339)
 
 	*s.Movies = append(*s.Movies, *movie)
 	return helpers.StoreJson("./data/movies.json", *s.Movies)
