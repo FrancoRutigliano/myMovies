@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -9,7 +8,6 @@ import (
 	"github.com/FrancoRutigliano/myMovies/internal/models"
 	"github.com/FrancoRutigliano/myMovies/pkg/helpers"
 	authHelpers "github.com/FrancoRutigliano/myMovies/pkg/helpers/auth"
-	"github.com/go-playground/validator/v10"
 )
 
 type AuthHandler struct {
@@ -32,14 +30,9 @@ func (auth *AuthHandler) RegisterRoutes(router *http.ServeMux) {
 func (auth *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	var payload models.UserRegister
 
-	if err := helpers.ParseJson(r, &payload); err != nil {
-		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	if err := helpers.Validate.Struct(&payload); err != nil {
-		_ = err.(validator.ValidationErrors)
-		helpers.SendCustom(w, http.StatusUnprocessableEntity, err.Error())
+	apiErr := helpers.IsValid(r, &payload)
+	if apiErr.Msg != "" {
+		helpers.SendCustom(w, apiErr.StatusCode, apiErr.Msg)
 		return
 	}
 
@@ -73,14 +66,10 @@ func (auth *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 func (auth *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	// Payload
 	var payload models.UserLogin
-	if err := helpers.ParseJson(r, &payload); err != nil {
-		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
-		return
-	}
 
-	if err := helpers.Validate.Struct(&payload); err != nil {
-		_ = err.(validator.ValidationErrors)
-		helpers.SendCustom(w, http.StatusUnprocessableEntity, err.Error())
+	apiErr := helpers.IsValid(r, &payload)
+	if apiErr.Msg != "" {
+		helpers.SendCustom(w, apiErr.StatusCode, apiErr.Msg)
 		return
 	}
 
@@ -113,15 +102,9 @@ func (auth *AuthHandler) ChangePassword(w http.ResponseWriter, r *http.Request) 
 	// Payload
 	var payload models.ChangePassword
 
-	log.Print("parsing payload")
-	if err := helpers.ParseJson(r, &payload); err != nil {
-		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	if err := helpers.Validate.Struct(&payload); err != nil {
-		_ = err.(validator.ValidationErrors)
-		helpers.SendCustom(w, http.StatusUnprocessableEntity, err.Error())
+	apiErr := helpers.IsValid(r, &payload)
+	if apiErr.Msg != "" {
+		helpers.SendCustom(w, apiErr.StatusCode, apiErr.Msg)
 		return
 	}
 
