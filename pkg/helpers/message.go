@@ -13,8 +13,8 @@ import (
 var Validate = validator.New()
 
 type APIError struct {
-	StatusCode int `json:"statuscode"`
-	Msg        any `json:"msg"`
+	StatusCode int    `json:"statuscode"`
+	Msg        string `json:"msg"`
 }
 
 func NewAPIError(statusCode int, message string) APIError {
@@ -27,13 +27,6 @@ func NewAPIError(statusCode int, message string) APIError {
 func SendCustom(w http.ResponseWriter, statusCode int, message string) {
 	apiErr := NewAPIError(statusCode, message)
 	WriteJson(w, statusCode, apiErr, "error")
-}
-
-func InvalidRequestData(errors map[string]string) APIError {
-	return APIError{
-		StatusCode: http.StatusUnprocessableEntity,
-		Msg:        errors,
-	}
 }
 
 func ReadIdParam(r *http.Request) (int64, error) {
@@ -58,4 +51,22 @@ func InitializeStoreWithDefaults(f string, data interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func IsValid(r *http.Request, p interface{}) APIError {
+	err := ParseJson(r, &p)
+	if err != nil {
+		return NewAPIError(
+			http.StatusBadRequest,
+			"invalid request data",
+		)
+	}
+
+	if err = Validate.Struct(&p); err != nil {
+		return NewAPIError(
+			http.StatusUnprocessableEntity,
+			err.Error(),
+		)
+	}
+	return APIError{}
 }
