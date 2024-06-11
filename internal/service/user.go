@@ -48,14 +48,27 @@ func NewUserStore(filename string) (*UserStore, error) {
 	return &UserStore{Users: &users}, nil
 }
 
+func (s *UserStore) FindById(id int64) (*models.User, error) {
+	for _, user := range *s.Users {
+		if id == user.ID {
+			userProfile := &models.User{
+				Name:      user.Name,
+				Review:    user.Review,
+				CreatedAt: user.CreatedAt,
+			}
+			return userProfile, nil
+		}
+	}
+	return nil, errors.New("user not found")
+}
+
 func (s *UserStore) FindByEmail(email string) (*models.User, error) {
 	user, ok := s.EmailExist(email)
 
 	if ok {
 		userProfile := &models.User{
 			Name:   user.Name,
-			Email:  user.Email,
-			Movies: user.Movies,
+			Review: user.Review,
 		}
 		return userProfile, nil
 	}
