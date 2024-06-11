@@ -25,7 +25,8 @@ func (u *UserHandler) RegisterRoutes(router *http.ServeMux) {
 	adminMiddleware := middlewares.RoleMiddleware("admin")
 	router.HandleFunc("GET /users", adminMiddleware(u.GetAllUsers))
 	router.HandleFunc("POST /user/email", adminMiddleware(u.GetUserByEmail))
-	router.HandleFunc("GET /user/profile", userMiddleware(u.GetProfile))
+	router.HandleFunc("GET /user/info_profile", userMiddleware(u.InfoProfile))
+	router.HandleFunc("GET /user/profile/{id}", u.GetProfile)
 }
 
 func (u *UserHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +60,7 @@ func (u *UserHandler) GetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	helpers.WriteJson(w, http.StatusOK, user, "user")
 }
 
-func (u *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+func (u *UserHandler) InfoProfile(w http.ResponseWriter, r *http.Request) {
 	userEmail, err := authHelpers.GetEmailFromToken(r.Context())
 	if err != nil {
 		helpers.SendCustom(w, http.StatusForbidden, err.Error())
@@ -70,6 +71,20 @@ func (u *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
 		return
+	}
+
+	helpers.WriteJson(w, http.StatusOK, user, "user")
+}
+
+func (u *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+	id, err := helpers.ReadIdParam(r)
+	if err != nil {
+		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
+	}
+
+	user, err := u.store.FindById(id)
+	if err != nil {
+		helpers.SendCustom(w, http.StatusBadRequest, err.Error())
 	}
 
 	helpers.WriteJson(w, http.StatusOK, user, "user")
