@@ -62,7 +62,7 @@ func IsValid(r *http.Request, p interface{}) APIError {
 		)
 	}
 
-	if err = Validate.Struct(&p); err != nil {
+	if err = Validate.Struct(p); err != nil {
 		return NewAPIError(
 			http.StatusUnprocessableEntity,
 			err.Error(),
