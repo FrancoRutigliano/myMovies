@@ -8,7 +8,7 @@ WORKDIR /go/src
 COPY go.mod .
 RUN go mod download
 COPY . .
-RUN go build ./main.go
+RUN go build ./cmd/main.go
 
 FROM alpine
 COPY --from=builder /go/src .
